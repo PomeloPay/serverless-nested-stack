@@ -172,7 +172,7 @@ class ServerlessNestedPlugin {
     removeDependsOnPermission(permissionsRules, apiStack) {
         Object.keys(permissionsRules).forEach(permission => {
             Object.keys(apiStack.Resources).forEach(key => {
-                if (apiStack.Resources[key].hasOwnProperty('DependsOn')) {
+                if (apiStack.Resources[key].hasOwnProperty('DependsOn') && Array.isArray(apiStack.Resources[key].DependsOn)) {
                     apiStack.Resources[key].DependsOn = apiStack.Resources[key].DependsOn.filter(depends => depends !== permission)
                 }
             });
