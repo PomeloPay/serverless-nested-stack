@@ -70,6 +70,7 @@ class ServerlessNestedPlugin {
         const cfApiStack = this.serverless.service
             .provider.compiledCloudFormationTemplate;
         this.addApiParameters(cfApiStack, roles);
+        this.removeDependsOnPermission(permissionsRules, cfApiStack);
 
         const cfPermissionStack = Object.assign({},
             require('./cloudformation-template.json'));
@@ -166,6 +167,16 @@ class ServerlessNestedPlugin {
             }
         });
         return permissions;
+    }
+
+    removeDependsOnPermission(permissionsRules, apiStack) {
+        Object.keys(permissionsRules).forEach(permission => {
+            Object.keys(apiStack.Resources).forEach(key => {
+                if (apiStack.Resources[key].hasOwnProperty('DependsOn')) {
+                    apiStack.Resources[key].DependsOn = apiStack.Resources[key].DependsOn.filter(depends => depends !== permission)
+                }
+            });
+        });
     }
 
     addApiParameters(cf, roles) {
